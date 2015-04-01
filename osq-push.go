@@ -2,13 +2,20 @@
 
 package main
 
-import "github.com/influxdb/influxdb/client"
+import (
+	"fmt"
+	"github.com/influxdb/influxdb/client"
+	"log"
+	"net/url"
+	"os"
+	"os/exec"
+)
 
 const (
 	MyHost        = "localhost"
 	MyPort        = 8086
-	MyDB          = "square_holes"
-	MyMeasurement = "shapes"
+	MyDB          = "serverdata"
+	MyMeasurement = "processes"
 )
 
 func main() {
@@ -33,4 +40,43 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Happy as a Hippo! %v, %s", dur, ver)
+
+	sql := "\"SELECT pid, parent, name, resident_size, phys_footprint, user_time, system_time FROM processes;\""
+	data := runQuery(sql)
+	// fmt.Println(data)
+
+	/*
+		s := []*influxdb.Series{{
+						Name: "api_access",
+						Columns: []string{
+							"status", "latency", "value", "query", "app_id",
+						},
+						Points: [][]interface{}{
+							{status, latency, cCopy.Request.URL.Path, cCopy.Request.URL.RawQuery, appId},
+						},
+					}}
+
+					// time.Sleep(time.Second * 10)
+					err := influxdbC.WriteSeries(s)
+
+	*/
+
+}
+
+func runQuery(sql string) string {
+	app := "osqueryi"
+	//	sql =  +  sql
+	fmt.Println(sql)
+	//cmd := exec.Command(app," --json ", sql)
+	cmd := app + " --json " + sql
+
+	out, err := exec.Command("sh", "-c", cmd).Output()
+	//out, err := cmd.Output()
+
+	if err != nil {
+		println(err.Error())
+		return "error"
+	}
+	return string(out)
+
 }
