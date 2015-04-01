@@ -1,0 +1,8 @@
+todo
+~~~~~
+
+queries to do via osquery
+
+sending data to influxdb
+
+frequency of running it
